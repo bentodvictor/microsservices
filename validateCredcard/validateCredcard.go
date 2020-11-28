@@ -18,15 +18,13 @@ func main() {
 
 func home(w http.ResponseWriter, r *http.Request) {
 	ccNumber := r.PostFormValue("ccNumber")
-	fmt.Print(len(ccNumber))
-
-	result := Result{Status: "invalidCc"}
+	result := Result{Status: "invalidCard"}
 
 	// verifica cc number
-	if (len(ccNumber) < 16 || len(ccNumber) > 16) {
-		result.Status = "invalidCc"
+	if len(ccNumber) < 16 || len(ccNumber) > 16 {
+		result.Status = "invalidCard"
 	} else {
-		result.Status = "validCc"
+		result.Status = "validCard"
 	}
 
 	jsonResult, err := json.Marshal(result)

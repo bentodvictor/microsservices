@@ -57,22 +57,19 @@ func home(w http.ResponseWriter, r *http.Request) {
 	// verifica cc (microsservico d)
 	resultCC := makeHttpCall("http://localhost:9093", ccNumber)
 
-	fmt.Print(resultCC)
-
 	// verifica cupom
 	valid := coupons.Check(coupon)
 
 	result := Result{Status: valid}
-	fmt.Print(result)
 
 	if result.Status == "valid" {
-		if resultCC.Status == "validCc" {
+		if resultCC.Status == "validCard" {
 			result.Status = "aproved"
 		} else {
-			result.Status = "invalidCc"
+			result.Status = "invalidCard"
 		}
 	} else {
-		result.Status = "invalidCupom"
+		result.Status = "invalidCoupon"
 	}
 
 	jsonResult, err := json.Marshal(result)

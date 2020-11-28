@@ -3,17 +3,30 @@ package main
 import (
 	"encoding/json"
 	"html/template"
-	"io/ioutil"
 	"log"
 	"net/http"
-	"net/url"
-
-	"github.com/hashicorp/go-retryablehttp"
+	"github.com/joho/godotenv"
+	"github.com/wesleywillians/go-rabbitmq/queue"
 )
 
 // estrutura para armazenar o resultado das requisições
 type Result struct {
 	Status string
+}
+
+// estrutura para ordems
+type Order struct {
+	Coupon string
+	CcNumber string
+}
+
+// funcao init eh invocada assim que programa eh executado
+// armazena variaves .env
+func init() {
+	err := godotenv.Load();
+	if err != nil {
+		log.Fatal("Error loading .env");
+	}
 }
 
 func main() {
@@ -32,44 +45,33 @@ func home(w http.ResponseWriter, r *http.Request) {
 // função para processamento do checkout
 func process(w http.ResponseWriter, r *http.Request) {
 
-	// invoca microsserviço dois (2)
-	result := makeHttpCall("http://localhost:9091", r.FormValue("coupon"), r.FormValue("cc-number"))
+	// obtém coupon e ccNumber para criar a ordem
+	coupon := r.PostFormValue("coupon")
+	ccNumber := r.PostFormValue("cc-number")
 
-	t := template.Must(template.ParseFiles("templates/home.html"))
-	t.Execute(w, result)
-}
-
-// sempre retorna uma estrutura Result
-func makeHttpCall(urlMicroservice string, coupon string, ccNumber string) Result {
-
-	// recebe dados do html
-	values := url.Values{}
-	values.Add("coupon", coupon)
-	values.Add("ccNumber", ccNumber)
-
-	retryClient := retryablehttp.NewClient()
-	retryClient.RetryMax = 5
-
-	// faz requisição e trata possivel erro
-	res, err := retryClient.PostForm(urlMicroservice, values)
-	if err != nil {
-		result := Result{Status: "Server is down!"}
-		return result
-	}
-	// termina conexão ao final da execução - somente no final
-	defer res.Body.Close()
-
-	// pega o corpo do resultado da chamada anterior
-	data, err := ioutil.ReadAll(res.Body)
-	if err != nil {
-		log.Fatal("Error processing result")
+	order := Order {
+		Coupon: coupon,
+		CcNumber: ccNumber,
 	}
 
-	result := Result{}
+	// converter para json
+	jsonOrder, err := json.Marshal(order)
+	if err != nil {
+		log.Fatal("Error parsing to json")
+	}
 
-	// pega o resultado (body) e converte para struct
-	json.Unmarshal(data, &result)
+	// cria nova fila e se conecta
+	rabbitMQ := queue.NewRabbitMQ()
+	ch := rabbitMQ.Connect()
+	defer ch.Close()	// Fecha conexão após tudo ser executado
 
-	return result
+	//  envia a mensagem: mensagem, tipo, exchange e routing key
+	err = rabbitMQ.Notify(string(jsonOrder), "application/json", "orders_ex", "")
+	if err != nil {
+		log.Fatal("Error sending message to the queue")
+	}
 
+	// invoca template
+	t := template.Must(template.ParseFiles("templates/process.html"))
+	t.Execute(w, "")
 }
