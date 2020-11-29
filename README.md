@@ -7,9 +7,10 @@
 
 [BR] O objetivo do curso é aprender sobre microsserviços, que serão desenvolvidos em GO, além de aumentar a gama de linguagens de programação conhecidas.
 
-
+---
 
 [BR] Configuração Exchange e Filas:
+
 [EN] Queues and Exchange configurations:
 
 - [BR] Configuração 1
