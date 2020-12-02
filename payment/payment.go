@@ -67,7 +67,7 @@ func process(msg amqp.Delivery) {
 	json.Unmarshal(msg.Body, &order)
 
 	// verifica cupom (microsservico c)
-	resultCoupon := makeHttpCall("http://localhost:9092", order.Coupon, order.CcNumber)
+	resultCoupon := makeHTTPCall("http://localhost:9092", order.Coupon, order.CcNumber)
 
 	switch resultCoupon.Status {
 	case invalidCoupon:
@@ -84,7 +84,7 @@ func process(msg amqp.Delivery) {
 }
 
 // invoca microsservico c (verificacao de cupom)
-func makeHttpCall(urlMicroservice string, coupon string, ccNumber string) Result {
+func makeHTTPCall(urlMicroservice string, coupon string, ccNumber string) Result {
 
 	values := url.Values{}
 	values.Add("coupon", coupon)

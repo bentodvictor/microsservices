@@ -12,6 +12,9 @@
 [BR] Configuração Exchange e Filas:
 
 [EN] Queues and Exchange configurations:
+ 
+```docker-compose up```
+```docker-compose down```
 
 - [BR] Configuração 1
 - [EN] Settings 1
