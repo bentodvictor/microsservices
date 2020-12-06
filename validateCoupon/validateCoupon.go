@@ -55,7 +55,7 @@ func home(w http.ResponseWriter, r *http.Request) {
 	ccNumber := r.PostFormValue("ccNumber")
 
 	// verifica cc (microsservico d)
-	resultCC := makeHttpCall("http://localhost:9093", ccNumber)
+	resultCC := makeHttpCall("http://microsservices-validate-credcard:9093", ccNumber)
 
 	// verifica cupom
 	valid := coupons.Check(coupon)
