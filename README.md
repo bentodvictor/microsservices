@@ -10,9 +10,9 @@
   <img alt="Stargazers" src="https://img.shields.io/github/stars/bentodvictor/microsservices?color=c1e7e3&logo=github">
 </p>
 
-> Project developed at the event **Avança DEV** taught by [FullCycle](https://fullcycle.com.br/).
->
-> The objective of the course is to learn about microservices, which will be developed in GO, in addition to increasing the range of known programming languages.
+Project developed at the event **Avança DEV** taught by [FullCycle](https://fullcycle.com.br/).
+
+The objective of the course is to learn about microservices, which will be developed in GO, in addition to increasing the range of known programming languages.
 
 ---
 
