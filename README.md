@@ -1,15 +1,15 @@
 # Microsservices
-> <p align="left">	
->   <img src="https://img.shields.io/github/last-commit/bentodvictor/microsservices?color=c1e7e3">
->   <img src="https://img.shields.io/github/issues/bentodvictor/microsservices?color=c1e7e3">
->   <img src="https://img.shields.io/github/issues-pr/bentodvictor/microsservices?color=c1e7e3">
->   <img src="https://img.shields.io/github/languages/count/bentodvictor/microsservices?color=c1e7e3">
->   <img src="https://img.shields.io/github/downloads/bentodvictor/microsservices/total?color=c1e7e3">
->   <img src="https://img.shields.io/github/repo-size/bentodvictor/microsservices?color=c1e7e3">
->   <img src="https://img.shields.io/badge/license-MIT-c1e7e3">
->   <img alt="Stargazers" src="https://img.shields.io/github/stars/bentodvictor/microsservices?color=c1e7e3&logo=github">
-> </p>
->
+<p align="left">	
+  <img src="https://img.shields.io/github/last-commit/bentodvictor/microsservices?color=c1e7e3">
+  <img src="https://img.shields.io/github/issues/bentodvictor/microsservices?color=c1e7e3">
+  <img src="https://img.shields.io/github/issues-pr/bentodvictor/microsservices?color=c1e7e3">
+  <img src="https://img.shields.io/github/languages/count/bentodvictor/microsservices?color=c1e7e3">
+  <img src="https://img.shields.io/github/downloads/bentodvictor/microsservices/total?color=c1e7e3">
+  <img src="https://img.shields.io/github/repo-size/bentodvictor/microsservices?color=c1e7e3">
+  <img src="https://img.shields.io/badge/license-MIT-c1e7e3">
+  <img alt="Stargazers" src="https://img.shields.io/github/stars/bentodvictor/microsservices?color=c1e7e3&logo=github">
+</p>
+
 > Project developed at the event **Avança DEV** taught by [FullCycle](https://fullcycle.com.br/).
 >
 > The objective of the course is to learn about microservices, which will be developed in GO, in addition to increasing the range of known programming languages.
