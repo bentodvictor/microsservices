@@ -5,6 +5,8 @@ import (
 	"html/template"
 	"log"
 	"net/http"
+
+	"github.com/streadway/amqp"
 	"github.com/joho/godotenv"
 	"github.com/wesleywillians/go-rabbitmq/queue"
 )
@@ -63,7 +65,81 @@ func process(w http.ResponseWriter, r *http.Request) {
 	// cria nova fila e se conecta
 	rabbitMQ := queue.NewRabbitMQ()
 	ch := rabbitMQ.Connect()
+
+	// cria exchange para ordens
+	if err := ch.ExchangeDeclare(
+		"orders_ex", 	// name
+		"direct",     	// type
+		true,        	// durable
+		false,         	// auto-deleted
+		false,         	// internal
+		false,         	// no-wait
+		nil,           	// arguments
+	); err != nil {
+		log.Fatal(err, "Failed to declare an exchange")
+	}
+
+	// cria dlx, quando algum microsservico cair
+	if err := ch.ExchangeDeclare(
+		"dlx", 	// name
+		"direct",     	// type
+		true,        	// durable
+		false,         	// auto-deleted
+		false,         	// internal
+		false,         	// no-wait
+		nil,           	// arguments
+	); err != nil {
+		log.Fatal(err, "Failed to declare an exchange")
+	}
+
+	// cria queue de ordens, indicando dlx para enviar a ordem caso microsservico caia no processo 
+	if _, err := ch.QueueDeclare(
+		"orders", // name
+		true,   // durable
+		false,   // delete when unused
+		false,   // exclusive
+		false,   // no-wait
+		amqp.Table{"x-dead-letter-exchange": "dlx"},
+	); err != nil {
+		log.Fatal(err, "Failed to declare an QueueDeclare")
+	}
+	
+	// cria queue de orders_dlq, e tenta reenviar para  orders_ex (sua dead letter) a cada 3s  
+	if _, err := ch.QueueDeclare(
+		"orders_dlq", // name
+		true,   // durable
+		false,   // delete when unused
+		false,   // exclusive
+		false,   // no-wait
+		amqp.Table{"x-dead-letter-exchange": "orders_ex", "x-message-ttl": 3000},
+	); err != nil {
+		log.Fatal(err, "Failed to declare an QueueDeclare")
+	}
+
+	// faz bind orders_ex - orders
+	if err := ch.QueueBind(
+		"orders",        // queue name
+		"",             // routing key
+		"orders_ex", // exchange
+		false,
+		nil,
+	); err != nil {
+		log.Fatal(err, "Failed to declare an QueueBind")
+	}
+
+	// faz bind dlx - orders_dlq
+	if err := ch.QueueBind(
+		"orders_dlq",        // queue name
+		"",             // routing key
+		"dlx", // exchange
+		false,
+		nil,
+	); err != nil {
+		log.Fatal(err, "Failed to declare an QueueBind")
+	}
+	
 	defer ch.Close()	// Fecha conexão após tudo ser executado
+
 
 	//  envia a mensagem: mensagem, tipo, exchange e routing key
 	err = rabbitMQ.Notify(string(jsonOrder), "application/json", "orders_ex", "")

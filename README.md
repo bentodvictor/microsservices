@@ -1,67 +1,48 @@
 # Microsservices
-[EN] Project developed at the event **Avança DEV** taught by [FullCycle](https://fullcycle.com.br/).
+<p align="left">	
+  <img src="https://img.shields.io/github/last-commit/bentodvictor/microsservices?color=c1e7e3">
+  <img src="https://img.shields.io/github/issues/bentodvictor/microsservices?color=c1e7e3">
+  <img src="https://img.shields.io/github/issues-pr/bentodvictor/microsservices?color=c1e7e3">
+  <img src="https://img.shields.io/github/languages/count/bentodvictor/microsservices?color=c1e7e3">
+  <img src="https://img.shields.io/github/downloads/bentodvictor/microsservices/total?color=c1e7e3">
+  <img src="https://img.shields.io/github/repo-size/bentodvictor/microsservices?color=c1e7e3">
+  <img src="https://img.shields.io/badge/license-MIT-c1e7e3">
+  <img alt="Stargazers" src="https://img.shields.io/github/stars/bentodvictor/microsservices?color=c1e7e3&logo=github">
+</p>
 
-[BR] Projeto desenvolvido no evento **Avança DEV** ministado pela [FullCycle](https://fullcycle.com.br/).
+Project developed at the event **Avança DEV** taught by [FullCycle](https://fullcycle.com.br/).
 
-[EN] The objective of the course is to learn about microservices, which will be developed in GO, in addition to increasing the range of known programming languages.
-
-[BR] O objetivo do curso é aprender sobre microsserviços, que serão desenvolvidos em GO, além de aumentar a gama de linguagens de programação conhecidas.
+The objective of the course is to learn about microservices, which will be developed in GO, in addition to increasing the range of known programming languages.
 
 ---
 
-[BR] Configuração Exchange e Filas:
+## Microsservices Details
+The application is using RabbitMQ (Docker image).
 
-[EN] Queues and Exchange configurations:
+- *Checkup*: 
+  - Load the base template,
+  - Gets the data informed: coupon and credit card number,
+  - Sends information to the **orders (orders_ex)** queue;
+- *Payment*:
+  - Reading and processing the information in the queue,
+  - Invokes microservice to validate coupon;
+- *Validate Coupon*:
+  - Coupon validation,
+  - Invokes microservice to validate credcard number;
+- *Validate Credcard*:
+  - Validate credcard number;
+  
+*If any microservice breaks, orders are sent to the **orders_dql (dlx)** queue and every 3 seconds an attempt is made to resubmit to the **orders (orders_ex)** queue.*
 
-- [BR] Configuração 1
-- [EN] Settings 1
+## Execute
+All microservices are Docker images and a complete docker-compose image was created to execute and fully integrate the application.
 
-**Exchange** > Add a new exchange >
-```
-Name: orders_ex
-Type: direct
-Durability: Durable
-Auto delete: No
-Internal: No
-```
+To start the application, execute:
 
-**Queues** >  Add a new queue
-```
-Type: Classic
-Name: orders
-Durability: durable
-Auto delete: No
-Arguments:
-  - x-dead-letter-exchange = dlx
+```docker-compose up -d```
 
--> Bind
-Queues > Add binding to this queue
-From echange: orders_ex
-```
+To end the application, execute:
 
-- [BR] Configuração 2
-- [EN] Settings 2
+```docker-compose down```
 
-**Exchange** > Add a new exchange >
-```
-Name: dlx
-Type: direct
-Durability: Durable
-Auto delete: No
-Internal: No
-```
-
-**Queues** >  Add a new queue
-```
-Type: Classic
-Name: orders_dlq
-Durability: durable
-Auto delete: No
-Arguments:
-  - x-dead-letter-exchange = orders_ex
-  - x-message-ttl = 3000
-
--> Bind
-Queues > Add binding to this queue
-From echange: dlx
-```
+If you wanna remove the images of all microsservice, run `docker image rm $image_id`.

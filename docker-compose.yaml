@@ -2,6 +2,7 @@ version: "3"
 
 services:
   rabbit:
+    hostname: rabbit
     image: "rabbitmq:3-management"
     environment:
       RABBITMQ_ERLANG_COOKIE: "SWQOKODSQALRPCLNMEQG"
@@ -9,5 +10,38 @@ services:
       RABBITMQ_DEFAULT_PASS: "rabbitmq"
       RABBITMQ_DEFAULT_VHOST: "/"
     ports:
-      - "15672:15672"
       - "5672:5672"
+      - "15672:15672"
+
+  checkout:
+    build: 
+      context: ./checkout
+      dockerfile: Dockerfile
+    container_name: microsservices-checkout
+    ports:
+      - 9090:9090
+
+  payment:
+    build: 
+      context: ./payment
+      dockerfile: Dockerfile
+    container_name: microsservices-payment
+    ports:
+      - 9091:9091
+    restart: always
+
+  validate-coupon:
+    build: 
+      context: ./validateCoupon
+      dockerfile: Dockerfile
+    container_name: microsservices-validate-coupon
+    ports:
+      - 9092:9092
+
+  validate-credcard:
+    build: 
+      context: ./validateCredcard
+      dockerfile: Dockerfile
+    container_name: microsservices-validate-credcard
+    ports:
+      - 9093:9093
